@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "Middleware Technologies for Distributed Systems exam project of PoliMi",
   "scripts": {
+    "dev:server": "npx nodemon server/index.js",
+    "dev:process": "npx nodemon process/index.js",
     "server": "node server/index.js",
     "process": "node process/index.js"
   },
@@ -14,7 +16,8 @@
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.2",
-    "kafkajs": "^1.15.0"
+    "kafkajs": "^1.15.0",
+    "pm2": "^5.1.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
