@@ -52,25 +52,48 @@ TOPIC=task
 
 The two scripts `start.sh` and `stop.sh` located in the root of the project will
 do all the magic to run the project. Afterwards, open `frontend/index.html` file
-to interact with the backend. Afterwards, to follow the logs from the backend,
-run the command
+to interact with the backend. Later on, to follow the logs from the backend, run
+the command
 
 ```bash
-npx pm2 logs
+npm run logs
 ```
 
 ### Manual run
 
-If it is necessary anyway to run the project manually, open at least two
-terminals and run in one of them
+If it is necessary anyway to run the project manually, first run the command
+
+```bash
+docker compose up -d
+```
+
+and then open two terminals, typing in one of them
 
 ```bash
 npm run server
 ```
 
-and in all the other terminals
+and in the other
 ```
-npm run process
+npm run process [-- -i <num>]
+```
+
+with the flag `-i` defining the number of processes you would like to spawn.
+If `num` isn't defined, it has default value of 1. For example, if you want to
+spawn 4 processes, type
+
+```bash
+npm run process -- -i 4
+```
+
+To follow the logs of the processes, type in the second terminal
+```bash
+npm run logs
+```
+
+To kill the server, just type `Ctrl+C`. To kill all the processes, type
+```
+npm run kill:process
 ```
 
 ### Debug run

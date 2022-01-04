@@ -4,9 +4,11 @@
   "description": "Middleware Technologies for Distributed Systems exam project of PoliMi",
   "scripts": {
     "dev:server": "npx nodemon server/index.js",
-    "dev:process": "npx nodemon process/index.js",
+    "dev:process": "npx pm2 start process/index.js --watch",
     "server": "node server/index.js",
-    "process": "node process/index.js"
+    "process": "npx pm2 start process/index.js --name process",
+    "kill:process": "npx pm2 delete process",
+    "logs": "npx pm2 logs"
   },
   "keywords": [],
   "author": "",
