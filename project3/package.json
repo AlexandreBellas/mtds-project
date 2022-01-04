@@ -1,0 +1,22 @@
+{
+  "name": "mtds-exam-project-3",
+  "version": "1.0.0",
+  "description": "Middleware Technologies for Distributed Systems exam project of PoliMi",
+  "scripts": {
+    "server": "node server/index.js",
+    "process": "node process/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.1",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.2",
+    "kafkajs": "^1.15.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
