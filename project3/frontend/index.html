@@ -1,0 +1,87 @@
+<html>
+  <head>
+    <title>Compute infrastructure</title>
+    <link rel="icon" href="./favicon.ico" />
+  </head>
+  <body>
+    <h1>Compute infrastructure website</h1>
+    <p>Choose the task you'd like to compute now</p>
+    <input
+      type="radio"
+      id="image-compression"
+      name="task"
+      value="image-compression"
+    />
+    <label for="image-compression">Image compression</label><br />
+    <input
+      type="radio"
+      id="text-formatting"
+      name="task"
+      value="text-formatting"
+    />
+    <label for="text-formatting">Text formatting</label><br />
+    <input
+      type="radio"
+      id="conversion-of-file"
+      name="task"
+      value="conversion-of-file"
+    />
+    <label for="conversion-of-file">Conversion of file</label><br />
+    <input
+      type="radio"
+      id="voice-registration"
+      name="task"
+      value="voice-registration"
+    />
+    <label for="voice-registration">Voice registration</label><br /><br />
+
+    <label for="directory">Directory location of the computation result:</label
+    ><br />
+    <input type="text" id="directory" name="directory" /><br /><br />
+    <button type="button" onclick="submit()">Submit</button>
+
+    <script>
+      function submit() {
+        const elements = document.getElementsByName('task')
+
+        let selectedTask = null
+
+        for (let i = 0; i < elements.length; i++) {
+          if (elements[i].checked) {
+            selectedTask = elements[i].value
+          }
+        }
+
+        if (selectedTask) {
+          const directory = document.getElementById('directory').value
+
+          // Generating random numbers as parameters for the task
+          const params = new Set()
+          while (params.size !== 8) {
+            params.add(Math.floor(Math.random() * 100) + 1)
+          }
+
+          const data = {
+            task: selectedTask,
+            params: Array.from(params),
+            directory
+          }
+
+          fetch(`http://localhost:3005/compute?task=${selectedTask}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          })
+            .then((response) => {
+              return response.json()
+            })
+            .then((jsonResponse) => {
+              alert('Task completed successfully!')
+            })
+        }
+      }
+    </script>
+  </body>
+</html>
