@@ -1,0 +1,33 @@
+# Default print width by prettier is 80, adjusted to use a little more room
+printWidth: 100
+
+# Use two spaces for indentation
+tabWidth: 5
+
+# We prefer single quotes in  code even when JSX and JSON always uses double quotes.
+singleQuote: true
+
+# Unify with convention used in JSX, HTML and CSS to use double quotes
+# Suggested change by @swerner. Also the default of prettier.
+# singleQuote: false
+
+# Don't use semicolons where they are not required. Reduces visual noise.
+semi: false
+
+# Trailing commas were a pattern used in the past in some code bases
+# but where mostly removed again cause they add quite an amount of visual noise.
+trailingComma: none
+
+# We set bracketSpacing to false to be in sync with current eslint configuration.
+bracketSpacing: false
+
+# Put the > of a multi-line JSX element at the end of the last line
+jsxBracketSameLine: false
+
+# Include parentheses around a sole arrow function parameter.
+# Making formatting more explicit and easier to grasp for all levels of knowledge.
+# This is also much more compatible to TypeScript as you have to use parens anyway when adding types.
+arrowParens: always
+
+# Markdown specific formatting of longer prose to wrap at print width.
+proseWrap: always
