@@ -1,9 +1,0 @@
-numpy
-pandas
-geopandas
-datetime
-pyproj
-h3
-functools
-h3pandas
-python-dotenv

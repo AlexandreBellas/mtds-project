@@ -1,0 +1,14 @@
+pip-tools
+pytest
+
+numpy
+pandas
+geopandas
+shapely
+datetime
+pyproj
+h3
+#functools
+h3pandas
+python-dotenv
+pyspark

@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import print_function
-
 import io
-import re
 from glob import glob
 from os.path import basename
 from os.path import dirname
@@ -23,30 +19,16 @@ def read(*names, **kwargs):
 
 
 setup(
-    name='nameless',
+    name='simulation',
     version='0.1.0',
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
-    py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
+    packages=find_packages('simulation'),
+    package_dir={'': 'simulation'},
+    py_modules=[splitext(basename(path))[0] for path in glob('simulation/*.py')],
     include_package_data=True,
-    install_requires=[
-        'numpy',
-        'pandas',
-        'geopandas',
-        #'shapely.geometry',
-        'datetime',
-        'pyproj',
-        'h3',
-        #'math',
-        'functools',
-        'h3pandas',
-        'python-dotenv',
-        #'pyspark.sql',
-        #'pyspark.streaming',
-    ],
+    install_requires=[],
     entry_points={
         'console_scripts': [
-            'nameless = src.cli:main',
+            'simulation=simulation.__main__:main',
         ]
     },
 )
