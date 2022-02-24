@@ -3,8 +3,18 @@ import pandas as pd
 import geopandas as geopd
 from shapely.geometry import Point
 from dotenv import dotenv_values
+from pathlib import Path
 
 config = dotenv_values(".env")
+
+
+def save_plot(dataframe):
+    temp_geodataframe = geopd.GeoDataFrame(dataframe, crs=3763)
+    temp_geodataframe = temp_geodataframe.set_geometry('geometry')
+    plot = temp_geodataframe.plot(color='white', edgecolor='black', markersize=0.5, figsize=(15, 15))
+    fig = plot.get_figure()
+    Path("output").mkdir(parents=True, exist_ok=True)
+    fig.savefig("output/spawned_entities_in_region.png")
 
 
 def add_needed_col_to_vehicle(df):
@@ -69,10 +79,12 @@ def spawn_entities(region_object_row):
 
     frames = [spawned_vehicles_geodf, spawned_people_geodf]
     result = pd.concat(frames, ignore_index=True)
-    print(region_object_row['NAME_3'].values[0])
     result['region_affiliation'] = region_object_row['NAME_3'].values[0]
     result['movement_area'] = region_object_row.iloc[0]['geometry']
 
     dataframe = pd.DataFrame(result, columns=['geometry', 'type', 'region_affiliation', 'history', 'movement_direction',
-                                              'movement_speed', 'noise_volume', 'noise_pollution_area', 'movement_area'])
+                                              'movement_speed', 'noise_volume', 'noise_pollution_area',
+                                              'movement_area'])
+    save_plot(dataframe)
+
     return dataframe

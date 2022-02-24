@@ -8,6 +8,7 @@ shapely
 datetime
 pyproj
 h3
+matplotlib
 #functools
 h3pandas
 python-dotenv

@@ -1,11 +1,11 @@
-import time
-
-from geopandas import GeoDataFrame
+from geopandas import geodataframe
 from pyproj import CRS
 from shapely.geometry import Point
 import random
-import geopandas as geopd
 from datetime import datetime
+from dotenv import dotenv_values
+import time
+config = dotenv_values(".env")
 
 
 def simulate_movement(array):
@@ -28,12 +28,13 @@ def simulate_movement(array):
 # spawned_people_geodf
 
 
-def start_simulation(entities_df) -> GeoDataFrame:
+def movement_simulation(entities_df) -> geodataframe:
+    start_time = time.time()
     # simulation_engine of people moving in a polygon
     # while len(entities_df['history'][0]) < 2:
     entities_df = entities_df.apply(simulate_movement, axis=1)
     # df = pd.DataFrame(spawned_people_geodf['history'][0]).set_index('t')
-    gdf = geopd.GeoDataFrame(entities_df, crs=CRS(3763))
+    gdf = geodataframe.GeoDataFrame(entities_df, crs=CRS(3763))
 
     # frame = spawned_people_geodf.plot(color='green',markersize=3, figsize=(10, 10))
     # agentsdf = gdf.to_crs(epsg=4326)
@@ -41,5 +42,7 @@ def start_simulation(entities_df) -> GeoDataFrame:
     # test = traj.hvplot(geo=True, tiles='OSM', line_width=1, frame_width=500, frame_height=500)
     # display.clear_output(wait=True)
     # display.display(pl.gcf())
-    time.sleep(1)
+    end_time = time.time()
+    time_elapsed = (end_time - start_time)
+    print("TIME movement_simulation: " + str(time_elapsed))
     return gdf
