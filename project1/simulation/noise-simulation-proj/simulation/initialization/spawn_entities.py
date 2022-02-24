@@ -33,7 +33,7 @@ def add_needed_col_to_people(df):
     return df
 
 
-def spawn_people(region_object_row):
+def spawn_entities(region_object_row):
     counter_people = 0
     counter_vehicle = 0
 
@@ -72,4 +72,7 @@ def spawn_people(region_object_row):
     print(region_object_row['NAME_3'].values[0])
     result['region_affiliation'] = region_object_row['NAME_3'].values[0]
     result['movement_area'] = region_object_row.iloc[0]['geometry']
-    return result
+
+    dataframe = pd.DataFrame(result, columns=['geometry', 'type', 'region_affiliation', 'history', 'movement_direction',
+                                              'movement_speed', 'noise_volume', 'noise_pollution_area', 'movement_area'])
+    return dataframe
