@@ -4,8 +4,8 @@
      "description": "",
      "scripts": {
           "test": "echo \"Error: no test specified\" && exit 1",
-          "start:frontend": "webpack-dev-server --mode=development --open --hot",
-          "build": "webpack --mode=production"
+          "start:frontend": "./node_modules/.bin/webpack-dev-server --mode=development --open --hot",
+          "build": "./node_modules/.bin/webpack --mode=production"
      },
      "author": "",
      "license": "ISC",

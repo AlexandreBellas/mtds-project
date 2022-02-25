@@ -19,7 +19,7 @@ const App = () => {
                <CssBaseline>
                     <NavbarComponent />
                     <Container>
-                         <Box>sds</Box>
+                         <Box></Box>
                          <div></div>
                     </Container>
                </CssBaseline>

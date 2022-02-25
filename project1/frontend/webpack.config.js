@@ -3,7 +3,7 @@ const HtmlWebPackPlugin = require('html-webpack-plugin')
 
 module.exports = {
      entry: [
-          path.join(process.cwd(), 'frontend/index.tsx') // or whatever the path of your root file is
+          path.join(process.cwd(), 'index.tsx') // or whatever the path of your root file is
      ],
      output: {
           path: path.resolve(__dirname, 'build'),
@@ -52,7 +52,7 @@ module.exports = {
      },
      plugins: [
           new HtmlWebPackPlugin({
-               template: './frontend/index.html'
+               template: 'index.html'
           })
      ],
      performance: {
