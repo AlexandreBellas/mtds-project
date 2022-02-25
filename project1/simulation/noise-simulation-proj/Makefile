@@ -1,8 +1,10 @@
 install:
 	pip install -r requirements.txt
 
+
 run:
 	python setup.py develop
+
 
 #setup:
 #	pip install pip-tools

@@ -25,7 +25,7 @@ def add_needed_col_to_vehicle(df):
         'add_to_y': random.randrange(-int(config.get("MOVING_SPEED_VEHICLE")), int(config.get("MOVING_SPEED_VEHICLE")))}
     # df['movement_area'] = df['geometry'].buffer(int(config.get("AREA_OF_MOVEMENT")), cap_style=3)
     df['movement_speed'] = int(config.get("MOVING_SPEED_VEHICLE"))
-    df['noise_volume'] = int(config.get("NOISE_LEVEL_VEHICLES"))
+    df['noise_volume'] = int(config.get("NOISE_LEVEL_VEHICLE"))
     df['noise_pollution_area'] = int(config.get("AFFECTED_AREA_BY_VEHICLE"))
     return df
 
@@ -60,7 +60,7 @@ def spawn_entities(region_object_row):
             spawned_people.append(spawned_point)
         counter_people += 1
 
-    while len(spawned_vehicles) < int(config.get("NUMBER_OF_VEHICLES")):
+    while len(spawned_vehicles) < int(config.get("NUMBER_OF_VEHICLE")):
         spawned_point = Point(random.uniform(polygon.bounds.minx.values[0], polygon.bounds.maxx.values[0]),
                               random.uniform(polygon.bounds.miny.values[0], polygon.bounds.maxy.values[0]))
         if region_object_row['geometry'].contains(spawned_point).values[0]:

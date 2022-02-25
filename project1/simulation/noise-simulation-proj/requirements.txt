@@ -2,14 +2,16 @@ pip-tools
 pytest
 
 numpy
-pandas
-geopandas
-shapely
-datetime
-pyproj
-h3
+pandas~=1.4.1
+geopandas~=0.10.2
+shapely~=1.8.1.post1
+datetime~=4.4
+pyproj~=3.3.0
+h3~=3.7.3
 matplotlib
-#functools
-h3pandas
-python-dotenv
+requests~=2.27.1
+h3pandas~=0.2.3
+python-dotenv~=0.19.2
 pyspark
+setuptools~=58.1.0
+paho-mqtt~=1.6.1
