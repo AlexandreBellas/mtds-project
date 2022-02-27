@@ -6,6 +6,7 @@ services:
     restart: unless-stopped
     volumes:
       - node_red_data:/data
+      - "./settings.js:/data/settings.js"
     ports:
       - "1880:1880"
     networks:

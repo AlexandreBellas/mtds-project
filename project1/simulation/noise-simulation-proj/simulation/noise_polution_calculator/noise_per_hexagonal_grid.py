@@ -1,11 +1,11 @@
-import h3pandas as h3
-import h3
-import geopandas as geopd
-
 from pathlib import Path
 from copy import copy
 import time
 from .decibel_calculator import decibel_calculator
+import h3pandas as h3
+import h3
+import geopandas as geopd
+
 
 def save_plot(dataframe):
     # temp_geodataframe = geopd.GeoDataFrame(dataframe, crs=4326)
@@ -32,7 +32,8 @@ def noise_per_hexagonal_grid(geo_dataframe_object):
 
     count_series = geo_dataframe_h3.groupby(by=['h3_polyfill'])['noise_volume'].apply(list).reset_index(
         name="noise_volume_list")
-    count_series['aggregated_noise_level'] = count_series.apply(lambda x: decibel_calculator(x.noise_volume_list), axis=1)
+    count_series['aggregated_noise_level'] = count_series.apply(lambda x: decibel_calculator(x.noise_volume_list),
+                                                                axis=1)
     # count_series = count_series.to_frame().reset_index()
     count_series = count_series.sort_values(by=['noise_volume_list'])
     save_plot(geo_dataframe)
