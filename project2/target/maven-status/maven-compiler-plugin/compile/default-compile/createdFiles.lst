@@ -1,0 +1,9 @@
+org/smarthome/actors/device/GenericDevice$Command.class
+org/smarthome/messages/device/RequestUpdateMode.class
+org/smarthome/messages/device/GenericRequest.class
+org/smarthome/messages/device/RequestMode.class
+org/smarthome/messages/device/GenericRespond.class
+org/smarthome/messages/device/RespondMode.class
+org/smarthome/actors/device/GenericDevice.class
+org/smarthome/messages/device/RespondUpdateMode.class
+org/smarthome/actors/device/HVAC$Mode.class
