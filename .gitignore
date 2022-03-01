@@ -52,3 +52,8 @@ Mkfile.old
 dkms.conf
 .idea/*
 .DS_Store
+
+# Demo files
+demo-mpi/files/*
+demo-mpi/.vscode/*
+demo-mpi/main

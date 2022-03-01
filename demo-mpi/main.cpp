@@ -8,28 +8,20 @@
 
 using namespace std;
 
-typedef struct {
-  char *content;
-  int count = 0;
-} word;
+int maxLenWord = 50;
 
-string convertToString(char *a) {
-  int i;
-  string s = "";
-
-  for (i = 0; a[i] != '\0'; i++) {
-    s = s + a[i];
-  }
-
-  return s;
-}
-
-void removeNonAlphanumeric(string *s) {
+void treatWordReadFromFile(string *s) {
+  // Remove non-alphanumeric characters
   for (string::iterator i = (*s).begin(); i != (*s).end(); i++) {
     if (!isalnum((*s).at(i - (*s).begin()))) {
       (*s).erase(i);
       i--;
     }
+  }
+
+  // Make it lower case
+  for (auto &c : *s) {
+    c = tolower(c);
   }
 }
 
@@ -42,65 +34,102 @@ string serializeWords(map<string, int> words) {
   return output;
 }
 
-map<string, vector<int>> deserializeWords(char *input) {
-  map<string, vector<int>> output;
-  map<string, vector<int>>::iterator outputIt;
-  string words(input);
+char **serializeOrganizedWords(map<string, vector<int>> wordMap, int rows, int columns) {
+  char **output;
+  output = (char **)malloc(rows * sizeof(char *));
+
+  // Loop through map and allocate in the matrix
+  int i = 0;
+  for (auto const &[word, countList] : wordMap) {
+    output[i] = (char *)malloc(columns * sizeof(char));
+
+    string serializedPair = word + ":";
+
+    for (int count : countList) {
+      serializedPair += to_string(count) + ",";
+    }
+
+    strcpy(output[i], serializedPair.c_str());
+
+    i++;
+  }
+
+  return output;
+}
+
+map<string, vector<int>> organizeWordsFrom(char *serializedWordCounts) {
+  map<string, vector<int>> wordMap;
+  map<string, vector<int>>::iterator wordMapIt;
+  string strSerializedWordCounts(serializedWordCounts);
 
   string delimiter = ";";
+  string innerDelimeter = ":";
   size_t pos = 0;
   string token;
 
   // Split string from ';' delimiter
-  while ((pos = words.find(delimiter)) != string::npos) {
-    token = words.substr(0, pos);
+  while ((pos = strSerializedWordCounts.find(delimiter)) != string::npos) {
+    token = strSerializedWordCounts.substr(0, pos);
 
     // Split token from ':' delimiter
-    string innerDelimeter = ":";
-
     string word = token.substr(0, token.find(innerDelimeter));
 
     const char *strCount = token.substr(token.find(innerDelimeter) + 1, token.size()).c_str();
     int count = atoi(strCount);
 
     // Insert the counts following each collision
-    outputIt = output.find(word);
-    if (outputIt != output.end()) {
-      outputIt->second.push_back(count);
+    wordMapIt = wordMap.find(word);
+    if (wordMapIt != wordMap.end()) {
+      wordMapIt->second.push_back(count);
     } else {
       vector<int> newIntList = {count};
-      output.insert(pair<string, vector<int>>(word, newIntList));
+      wordMap.insert(pair<string, vector<int>>(word, newIntList));
     }
 
-    words.erase(0, pos + delimiter.length());
+    strSerializedWordCounts.erase(0, pos + delimiter.length());
   }
 
-  return output;
+  return wordMap;
 }
 
-map<string, int> countWordsFrom(map<string, vector<int>> hashTable) {
-  map<string, int> output;
-  map<string, int>::iterator outputIt;
+pair<string, vector<int>> deserializeWordCounts(char *serializedWordCounts) {
+  vector<int> counts;
+  vector<int>::iterator countsIt;
+  string strSerializedWordCounts(serializedWordCounts);
 
-  for (auto &[key, arrVal] : hashTable) {
-    int count = 0;
+  string outterDelimiter = ":";
+  string innerDelimeter = ",";
+  size_t outterPos = 0;
+  size_t innerPos = 0;
 
-    for (auto val : arrVal) {
-      count += val;
-    }
+  string word;
+  string strCounts;
 
-    outputIt = output.find(key);
-    if (outputIt != output.end()) {
-      outputIt->second += count;
-    } else {
-      output.insert(pair<string, int>(key, count));
-    }
+  // Split string from outter delimiter
+  outterPos = strSerializedWordCounts.find(outterDelimiter);
+
+  word = strSerializedWordCounts.substr(0, outterPos);
+  strCounts = strSerializedWordCounts.substr(outterPos + outterDelimiter.length(), strSerializedWordCounts.size());
+
+  // Split token from inner delimiter
+  while ((innerPos = strCounts.find(innerDelimeter)) != string::npos) {
+    string strCountNumber = strCounts.substr(0, innerPos);
+
+    // const char *strCount = word.substr(word.find(innerDelimeter) + 1, word.size()).c_str();
+    int count = atoi(strCountNumber.c_str());
+
+    counts.push_back(count);
+
+    strCounts.erase(0, innerPos + innerDelimeter.length());
   }
+
+  pair<string, vector<int>> output(word, counts);
 
   return output;
 }
 
 int main(int argc, char *argv[]) {
+  // Global configuration
   MPI_Init(NULL, NULL);
 
   const int root = 0;
@@ -108,11 +137,11 @@ int main(int argc, char *argv[]) {
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
   MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
-  char buff[50];
+  char buff[maxLenWord];
   map<string, int> words = {};
   map<string, int>::iterator wordsIt;
 
-  // Prepare each file reading
+  // Prepare to read and open each file
   FILE *file;
 
   const char *fileNamePrefixRaw = to_string(my_rank + 1).c_str();
@@ -124,8 +153,8 @@ int main(int argc, char *argv[]) {
 
   // Read respective file
   while (fscanf(file, "%s", buff) == 1) {
-    string readWord = convertToString(buff);
-    removeNonAlphanumeric(&readWord);
+    string readWord(buff);
+    treatWordReadFromFile(&readWord);
 
     wordsIt = words.find(readWord);
     if (wordsIt != words.end()) {
@@ -135,17 +164,17 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  // Prepare to send to root
-  string completeList = serializeWords(words);
-  int listSize = completeList.size();
+  // Prepare to send to root; "map" is serialized to simplify the message
+  string serializedWordList = serializeWords(words);
+  int serializedWordListSize = serializedWordList.size();
 
-  // Gather count of chars
+  // Gather count of chars of each serialized word list
   int *numChars = NULL;
   if (my_rank == root) {
     numChars = (int *)malloc(world_size * sizeof(int));
   }
 
-  MPI_Gather(&listSize, 1, MPI_INT, numChars, 1, MPI_INT, root, MPI_COMM_WORLD);
+  MPI_Gather(&serializedWordListSize, 1, MPI_INT, numChars, 1, MPI_INT, root, MPI_COMM_WORLD);
 
   // Figure out the total length of string, and displacements for each rank
   int totlen = 0;
@@ -172,29 +201,120 @@ int main(int argc, char *argv[]) {
   }
 
   // Gather all strings after preparing the receiver string
-  MPI_Gatherv(completeList.c_str(), listSize, MPI_CHAR,
+  MPI_Gatherv(serializedWordList.c_str(), serializedWordListSize, MPI_CHAR,
               totalstring, numChars, displs, MPI_CHAR,
               root, MPI_COMM_WORLD);
 
-  map<string, vector<int>> hashTable;
+  // Organize words for posterior counting
+  map<string, vector<int>> wordMap;
+  char **organizedCountedWordList = NULL;
+  int totalNumWords;
+
+  int rows;
+  int columns = maxLenWord + 2 * world_size;
 
   if (my_rank == root) {
-    cout << totalstring << endl;
-    hashTable = deserializeWords(totalstring);
+    // Organize words in a map of counts
+    wordMap = organizeWordsFrom(totalstring);
 
-    map<string, int> wordsCounted = countWordsFrom(hashTable);
+    // Build matrix of words
+    rows = wordMap.size();
+    organizedCountedWordList = serializeOrganizedWords(wordMap, rows, columns);
+  }
 
-    for (auto const &[key, val] : wordsCounted) {
-      cout << key << ": " << val << endl;
+  // Share with all threads the amount of words
+  MPI_Bcast(&rows, 1, MPI_INT, root, MPI_COMM_WORLD);
+
+  MPI_Barrier(MPI_COMM_WORLD);
+
+  // Send each part of the serialized word list to each process, and sum the counts
+  char *serializedWordCounts = NULL;
+  serializedWordCounts = (char *)malloc(columns * sizeof(char));
+
+  int process = 0;
+
+  for (int i = 0; i < rows; i++) {
+    process++;
+
+    // Circular logic
+    if (process == world_size) {
+      process = 1;
     }
 
+    // Root process task
+    if (my_rank == root) {
+      MPI_Send(organizedCountedWordList[i], columns, MPI_CHAR, process, 0, MPI_COMM_WORLD);
+    }
+    // All other processes task
+    else if (my_rank == process) {
+      MPI_Status status;
+      MPI_Recv(serializedWordCounts, columns, MPI_CHAR, root, 0, MPI_COMM_WORLD, &status);
+
+      pair<string, vector<int>> wordCounts = deserializeWordCounts(serializedWordCounts);
+
+      int sum = 0;
+      for (auto count : wordCounts.second) {
+        sum += count;
+      }
+
+      string serializedResult = wordCounts.first + ":" + to_string(sum);
+
+      // Fill the rest of the string with empty character avoiding memory leak
+      while (serializedResult.size() < columns) {
+        serializedResult += '\0';
+      }
+
+      MPI_Send(serializedResult.c_str(), serializedResult.size(), MPI_CHAR, root, 0, MPI_COMM_WORLD);
+    }
+  }
+
+  // Last task: sum all counts and write to file
+  if (my_rank == root) {
+    // Receive message from all processes in root
+    process = 0;
+
+    string strResultText;
+
+    for (int i = 0; i < rows; i++) {
+      process++;
+
+      if (process == world_size) {
+        process = 1;
+      }
+
+      MPI_Status status;
+      MPI_Recv(serializedWordCounts, columns, MPI_CHAR, process, 0, MPI_COMM_WORLD, &status);
+
+      strResultText += serializedWordCounts + string("; ");
+    }
+
+    // Write results to file
+    FILE *resultFile;
+    resultFile = fopen("./files/result.txt", "w");
+
+    fprintf(resultFile, "%s", strResultText.c_str());
+
+    fclose(resultFile);
+
+    // Free memory from prior "gather" process
     free(totalstring);
     free(displs);
     free(numChars);
+
+    // Free memory from posterior "send" and "receive" process
+    for (int i = 0; i < rows; i++) {
+      free(organizedCountedWordList[i]);
+    }
+
+    free(organizedCountedWordList);
   }
 
+  free(serializedWordCounts);
+
+  // Close all files
   fclose(file);
 
+  // Wait for all the threads to terminate and finish MPI
   MPI_Barrier(MPI_COMM_WORLD);
   MPI_Finalize();
 
