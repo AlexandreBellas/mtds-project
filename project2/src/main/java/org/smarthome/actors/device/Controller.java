@@ -12,9 +12,9 @@ import org.smarthome.messages.controller.ReceiveTemperatureReading;
 import org.smarthome.messages.controller.RespondTemperatureReading;
 import org.smarthome.utils.Mode;
 
-public class Controller extends AbstractBehavior<Controller.Command> {
+public class Controller extends GenericDevice {
 
-    public interface Command { }
+//    public interface Command { }
     public final ActorRef<HVAC.Command> hvacRef;
 
     public long getTargetTemperature() {

@@ -13,9 +13,9 @@ import org.smarthome.messages.hvac.RespondMode;
 import org.smarthome.messages.hvac.RespondUpdateMode;
 import org.smarthome.utils.Mode;
 
-public class HVAC extends AbstractBehavior<HVAC.Command> {
+public class HVAC extends GenericDevice {
 
-    public interface Command { }
+//    public interface Command { }
 
     public HVAC(ActorContext<Command> context) {
         super(context);
