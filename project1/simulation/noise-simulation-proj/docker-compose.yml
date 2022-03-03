@@ -11,8 +11,6 @@ services:
       - "1880:1880"
     networks:
       - localnet
-
-
   MQTTbroker:
     container_name: MQTTbroker
     image: eclipse-mosquitto:1.6.13
@@ -24,6 +22,9 @@ services:
       - "./mosquitto.conf:/mosquitto/config/mosquitto.conf"
     networks:
       - localnet
+#  simulation:
+#      build: app
+#      restart: unless-stopped
 
 networks:
   localnet:
