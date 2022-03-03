@@ -2,36 +2,14 @@ import sys
 from initialization.load_regions import load_country
 from initialization.spawn_entities import spawn_entities
 from simulation_engine.simulateMovement import movement_simulation
-from noise_polution_calculator.noise_per_hexagonal_grid import noise_per_hexagonal_grid
+from noise_polution_calculator.pyspark_noise_per_hexagonal_grid import pyspark_noise_per_hexagonal_grid
 from dotenv import dotenv_values
-import requests
 import time
-import json
+from send_http import mqtt_publish
+import threading
+from queue import LifoQueue
 
 config = dotenv_values(".env")
-
-
-def post_to_node_red(dataframe):
-    result = dataframe.to_json(orient="records")
-    # parsed = json.loads(result)
-    # json.dumps(parsed, indent=4)
-    import json
-    with open('data.json', 'w', encoding='utf-8') as f:
-        json.dump(result, f, ensure_ascii=False, indent=4)
-
-
-    # api-endpoint
-    url = "http://localhost:1880/getname"
-
-    # defining a params dict for the parameters to be sent to the API
-    data = {'dataframe': result}
-
-    # sending get request and saving the response as response object
-    r = requests.post(url=url, data=data)
-
-    # extracting data in json format
-    data = r.json()
-    print(data)
 
 
 def main(args=None):
@@ -45,22 +23,37 @@ def main(args=None):
     gdf_selected_region = gdf[gdf['NAME_3'] == 'Schweinfurt Städte']
 
     spawned_entities_df = spawn_entities(gdf_selected_region)
-
     print("SIMULATION_BEGIN")
     interation_counter = 0
+
+    entities_queue = LifoQueue()
+
+    def write_thread(queue: LifoQueue):
+        print("write_thread Initialized")
+        current_movement_simulation = queue.get()
+        print(current_movement_simulation.head(10))
+        while True:
+            time.sleep(int(config.get("TIME_STEP")))
+            print(current_movement_simulation.head(10))
+            print("write_thread Calculating")
+            noise_level_df = pyspark_noise_per_hexagonal_grid(current_movement_simulation)
+            print("write_thread publihing")
+            mqtt_publish(noise_level_df.toPandas())
+            print("write_thread DONE")
+
+    t1 = threading.Thread(target=write_thread, args=(entities_queue,))
+    t1.start()
+
     while True:
         start_time = time.time()
         print("SIMULATION_INTERATION: " + str(interation_counter))
-        spawned_entities_df = movement_simulation(spawned_entities_df)
-        print(len(spawned_entities_df['history'][0]))
-        noise_level_df = noise_per_hexagonal_grid(spawned_entities_df)
+        entities_queue.put(movement_simulation(spawned_entities_df))
         interation_counter = interation_counter + 1
         end_time = time.time()
         time_elapsed = (end_time - start_time)
         print("TIME total iteration: " + str(time_elapsed))
-        post_to_node_red(noise_level_df)
-    # Do argument parsing here (eg. with argparse) and anything else
-    # you want your project to do. Return values are exit codes.
+        time.sleep(1)
+
 
 
 if __name__ == "__main__":

@@ -12,6 +12,7 @@ matplotlib
 requests~=2.27.1
 h3pandas~=0.2.3
 python-dotenv~=0.19.2
-pyspark
+#pyspark
 setuptools~=58.1.0
 paho-mqtt~=1.6.1
+geojson
