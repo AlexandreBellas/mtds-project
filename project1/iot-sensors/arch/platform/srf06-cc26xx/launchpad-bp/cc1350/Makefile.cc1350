@@ -1,0 +1,10 @@
+### Will allow the inclusion of the correct CPU makefile
+CPU_FAMILY = cc13xx
+
+### Add to the source dirs
+CONTIKI_TARGET_DIRS += launchpad-bp/cc1350
+
+BOARD_SOURCEFILES += rf-switch.c tx-power-driver.c
+
+### Include the common launchpad makefile
+include $(PLATFORM_ROOT_DIR)/launchpad-bp/Makefile.launchpad-bp
