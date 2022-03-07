@@ -1,0 +1,22 @@
+version: "3"
+services:
+  MQTTbroker:
+    container_name: MQTTbroker
+    image: eclipse-mosquitto:1.6.13
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - "./mosquitto.conf:/mosquitto/config/mosquitto.conf"
+    networks:
+      - localnet
+
+networks:
+  localnet:
+
+volumes:
+  node_red_data:
+
+
+
