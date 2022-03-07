@@ -11,6 +11,8 @@ console.log('[MAIN-SERVER] Initializing producer...')
 const app = express()
 const port = process.env.SERVER_PORT
 const topicName = process.env.TOPIC
+const numPartitions = process.env.NUM_PROCESSES
+
 app.use(cors())
 app.use(bodyParser.json({ type: 'application/json' }))
 
@@ -34,7 +36,7 @@ const kafkaConfig = async () => {
   if (!topics.includes(topicName)) {
     console.log(`[MAIN-SERVER] Created topic '${topicName}'`)
     await admin.createTopics({
-      topics: [{ topic: topicName, numPartitions: taskMap.length }]
+      topics: [{ topic: topicName, numPartitions }]
     })
   }
 
@@ -66,18 +68,23 @@ app.use((req, res, next) => {
 app.post('/compute', async (req, res) => {
   const { task, params, directory } = req.body
 
-  const resp = await producer.send({
-    topic: topicName,
-    messages: [
-      {
-        value: JSON.stringify({
-          task,
-          params,
-          directory
-        })
-      }
-    ]
-  })
+  let resp = []
+
+  while (Array.isArray(resp) && resp.length === 0) {
+    resp = await producer.send({
+      topic: topicName,
+      messages: [
+        {
+          value: JSON.stringify({
+            task,
+            params,
+            directory
+          }),
+          partition: taskMap.indexOf(task)
+        }
+      ]
+    })
+  }
 
   console.log('[MAIN-SERVER] Successfully created messages: ', resp)
 
